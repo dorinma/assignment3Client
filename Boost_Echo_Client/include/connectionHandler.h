@@ -28,7 +28,7 @@ public:
     // Returns false in case the connection is closed before bytesToRead bytes can be read.
     bool getBytes(char bytes[], unsigned int bytesToRead);
  
-	// Send a fixed number of bytes from the client - blocking.
+	// Send a fixed number of bytes from the Client - blocking.
     // Returns false in case the connection is closed before all the data is sent.
     bool sendBytes(const char bytes[], int bytesToWrite);
 	

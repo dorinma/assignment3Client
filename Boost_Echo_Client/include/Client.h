@@ -6,31 +6,23 @@
 #define BOOST_ECHO_CLIENT_CLIENT_H
 
 #include "Protocol.h"
+#include "Book.h"
 #include <string>
 #include <vector>
 
 using namespace std;
 
-class client {
+class Client {
 private:
-    bool shouldTerminate;
-    Protocol protocol;
+
     string userName;
     string passcode;
-    vector<string> inventory;
-    unordered_map<int, string> subId;
+    vector<Book> inventory;
+    unordered_map<string, string> subId;
     int subCount;
 
 public:
-    client(string username, string passcode);
-
-    void setProtocol(const Protocol &protocol);
-
-    bool isShouldTerminate() const;
-
-    void setShouldTerminate(bool shouldTerminate);
-
-    const Protocol &getProtocol() const;
+    Client(string username, string passcode);
 
     const string &getUserName() const;
 
@@ -40,17 +32,19 @@ public:
 
     void setPasscode(const string &passcode);
 
-    const vector<string> &getInventory() const;
+    const vector<Book> &getInventory() const;
 
-    void setInventory(const vector<string> &inventory);
+    void setInventory(const vector<Book> &inventory);
 
-    const unordered_map<int, string>getSubId() const;
+    const unordered_map<string, string>getSubId() const;
 
-    void setSubId(const unordered_map<int, string>subId);
+    void setSubId(const unordered_map<string string>subId);
 
     int getSubCount() const;
 
     void setSubCount(int subCount);
+
+    void addBook(Book book);
 };
 
 

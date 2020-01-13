@@ -8,13 +8,18 @@
 #include <vector>
 #include "FrameObject.h"
 #include "connectionHandler.h"
+#include "Client.h"
 
 using namespace std;
 
 class Protocol {
+
 public:
-    Protocol();
-    void process(vector<std::string> input);
+    Protocol(Client& c);
+    bool process(FrameObject msg);
+
+private:
+    Client client;
 };
 
 #endif //BOOST_ECHO_CLIENT_PROTOCOL_H

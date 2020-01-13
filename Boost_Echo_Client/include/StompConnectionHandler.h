@@ -9,7 +9,7 @@
 #include <boost/asio.hpp>
 #include "MessageEncoderDecoder.h"
 #include "Protocol.h"
-#include "client.h"
+#include "Client.h"
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
@@ -25,7 +25,7 @@ private:
     tcp::socket socket_;
     MessageEncoderDecoder encdec;
     Protocol protocol;
-    client client;
+    Client client;
     bool isConnected;
     bool shouldTerminate;
 
@@ -40,7 +40,7 @@ public:
     // Returns false in case the connection is closed before bytesToRead bytes can be read.
     bool getBytes(char bytes[], unsigned int bytesToRead);
 
-    // Send a fixed number of bytes from the client - blocking.
+    // Send a fixed number of bytes from the Client - blocking.
     // Returns false in case the connection is closed before all the data is sent.
     bool sendBytes(const char bytes[], int bytesToWrite);
 

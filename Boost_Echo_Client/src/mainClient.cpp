@@ -2,7 +2,7 @@
 #include <connectionHandler.h>
 
 /**
-* This code assumes that the server replies the exact text the client sent it (as opposed to the practical session example)
+* This code assumes that the server replies the exact text the Client sent it (as opposed to the practical session example)
 */
 int main (int argc, char *argv[]) {
     if (argc < 3) {
@@ -18,7 +18,7 @@ int main (int argc, char *argv[]) {
         return 1;
     }
 	
-	//From here we will see the rest of the ehco client implementation:
+	//From here we will see the rest of the ehco Client implementation:
     while (1) {
         const short bufsize = 1024;
         char buf[bufsize];
