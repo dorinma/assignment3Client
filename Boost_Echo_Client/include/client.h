@@ -13,9 +13,6 @@ using namespace std;
 
 class client {
 private:
-    string host;
-    short port;
-    //void sendToServer();
     bool shouldTerminate;
     Protocol protocol;
     string userName;
@@ -26,13 +23,8 @@ private:
 
 public:
     client(string username, string passcode);
-    const string &getHost() const;
-    void setHost(const string &host);
+
     void setProtocol(const Protocol &protocol);
-
-    short getPort() const;
-
-    void setPort(short port);
 
     bool isShouldTerminate() const;
 
