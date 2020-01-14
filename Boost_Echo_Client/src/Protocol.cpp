@@ -10,6 +10,8 @@
 
 using namespace std;
 
+Protocol::Protocol() { }
+
 Protocol::Protocol(Client &c) : client(c){}
 
 FrameObject* Protocol::process(FrameObject msg) {
