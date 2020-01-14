@@ -28,23 +28,25 @@ public:
 
     void setUserName(const string &userName);
 
-    const string &getPasscode() const;
+    string &getPasscode();
 
     void setPasscode(const string &passcode);
 
-    const vector<Book> &getInventory() const;
+    vector<Book> &getInventory();
 
     void setInventory(const vector<Book> &inventory);
 
-    const unordered_map<string, string>getSubId() const;
+    unordered_map<string, string>getSubId();
 
     void setSubId(const unordered_map<string string>subId);
 
-    int getSubCount() const;
+    int getSubCount();
 
     void setSubCount(int subCount);
 
     void addBook(Book book);
+
+    void addGenre(string subId, string genre);
 };
 
 

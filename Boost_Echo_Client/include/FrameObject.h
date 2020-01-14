@@ -9,6 +9,8 @@
 
 class FrameObject {
 public:
+    FrameObject();
+
     FrameObject(std::string command, std::unordered_map<std::string, std::string> headers, std::string body);
 
     const std::string &getCommand() const;

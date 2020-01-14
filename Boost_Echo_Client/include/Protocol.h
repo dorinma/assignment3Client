@@ -16,7 +16,7 @@ class Protocol {
 
 public:
     Protocol(Client& c);
-    bool process(FrameObject msg);
+    FrameObject* process(FrameObject msg);
 
 private:
     Client client;

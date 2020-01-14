@@ -25,7 +25,7 @@ void Client::setUserName(const string &userName) {
     Client::userName = userName;
 }
 
-const string &Client::getPasscode() const {
+string &Client::getPasscode() {
     return passcode;
 }
 
@@ -33,7 +33,7 @@ void Client::setPasscode(const string &passcode) {
     Client::passcode = passcode;
 }
 
-const vector<Book> &Client::getInventory() const {
+vector<Book> &Client::getInventory() {
     return inventory;
 }
 
@@ -41,7 +41,7 @@ void Client::setInventory(const vector<Book> &inventory) {
     Client::inventory = inventory;
 }
 
-int Client::getSubCount() const {
+int Client::getSubCount(){
     return subCount;
 }
 
@@ -49,7 +49,7 @@ void Client::setSubCount(int subCount) {
     Client::subCount = subCount;
 }
 
-const unordered_map<string, string> Client::getSubId() const {
+unordered_map<string, string> Client::getSubId()  {
     return subId;
 }
 
@@ -59,4 +59,7 @@ void Client::addBook(Book book) {
     this->inventory.push_back(book);
 }
 
+void Client::addGenre(string subId, string genre) {
+    this->getSubId()[subId] = genre;
+}
 

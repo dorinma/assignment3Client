@@ -17,6 +17,20 @@ public:
 
 
 private:
+public:
+    const string &getNameBook() const;
+
+    void setNameBook(const string &nameBook);
+
+    const string &getGenre() const;
+
+    void setGenre(const string &genre);
+
+    const string &getLastOwner() const;
+
+    void setLastOwner(const string &lastOwner);
+
+private:
     string nameBook;
     string genre;
     string lastOwner;
