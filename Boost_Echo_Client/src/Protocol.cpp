@@ -3,37 +3,40 @@
 //
 
 #include "Protocol.h"
-#include "FrameObject.h"
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <iostream>
 
 using namespace std;
 
-Protocol::Protocol() { }
+Protocol::Protocol() {
+    Client client();
+}
 
-Protocol::Protocol(Client &c) : client(c){}
+Client Protocol::getClient() { return client; }
 
-FrameObject* Protocol::process(FrameObject msg) {
+void Protocol::setClient(Client c) {
+    client = c;
+}
+
+FrameObject Protocol::process(FrameObject msg) {
 
     string command = msg.getCommand();
     string body = msg.getBody();
     unordered_map<string, string> headers = msg.getHeaders();
-    FrameObject* frame = new FrameObject();
+    FrameObject frame("EMPTY");
 
     if(command == "MESSAGE")
     {
         string newCommand = "SEND";
 
-        string currUser = body.substr(0, body.find(" "));
-
         if (body.find("added"))
         {
             vector <string> exp;
             boost::split(exp, body, boost::is_any_of(" "));
-            string bookName = "";
-            bookName = exp[5];
-            for(int i=6; i<exp.size(); i++)
+            string bookName = exp[5];
+            for(int i = 6; i < exp.size(); i++)
             {
                 bookName = bookName + " " + exp[i];
             }
@@ -42,12 +45,12 @@ FrameObject* Protocol::process(FrameObject msg) {
             string lastOwner = "";
             Book book(bookName, genre, lastOwner);
 
-            if (client.getSubId().count(subId) && client.getUserName().compare(currUser))
+            if (client.getSubId().count(subId) == 1 && client.getUserName() == exp[0]) //TODO check that running
             {
-                if(client.getSubId().at(subId).compare(genre))
+                if(client.getSubId().at(subId) == genre)
                     client.addBook(book);
                 else
-                    cout<<"genre and subscription id dont match"<<endl;
+                    std::cout<<"genre and subscription id dont match"<<endl;
             }
             else
             {
@@ -73,10 +76,9 @@ FrameObject* Protocol::process(FrameObject msg) {
                     string newBody = client.getUserName() + " has " + bookName;
                     unordered_map<string, string> newHeaders;
                     newHeaders["destination"] = genre;
-                    frame = new FrameObject(newCommand, newHeaders, newBody);
+                    FrameObject newFrame(newCommand, newHeaders, newBody);
                     currBook.setExists(false);
-                    //client.removeBook(bookName);
-                    return frame;
+                    return newFrame;
                 }
             }
         }//end borrowing book
@@ -96,10 +98,10 @@ FrameObject* Protocol::process(FrameObject msg) {
                 string newBody = "Taking " + bookName + " from " + lastOwner;
                 unordered_map<string, string> newHeaders;
                 newHeaders["destination"] = genre;
-                frame = new FrameObject(newCommand, newHeaders, newBody);
+                FrameObject newFrame(newCommand, newHeaders, newBody);
                 Book *book = new Book(bookName, genre, lastOwner);
                 client.addBook(*book);
-                return frame;
+                return newFrame;
             }
         }//end taking book
 
@@ -116,15 +118,12 @@ FrameObject* Protocol::process(FrameObject msg) {
             }
             //return from
             if(client.findBook(bookName)) {
-                //Book* b = client.getBook(bookName);
-                //b->setExists(true);
                 client.removeBook(bookName);
             }
             //return to
             else if (client.getUserName().compare(lastOwner)) {
                 Book* b = client.getBook(bookName);
                 b->setExists(true);
-                //Book *book = new Book(bookName, genre, lastOwner, true);
                 client.addBook(*b);
             }
             return frame;
@@ -142,27 +141,28 @@ FrameObject* Protocol::process(FrameObject msg) {
                     newBody += ",";
             }
 
-            frame = new FrameObject(newCommand, newHeaders, newBody);
-            return frame;
+            FrameObject newFrame(newCommand, newHeaders, newBody);
+            return newFrame;
         }
         else if(body.find(":"))
         {
 
         }
-        return nullptr;
+        return frame;
     }
-    else if(command == "ERROR")
-        return nullptr;
-    else if(command == "CONNECTED") //for debug onlyyyyy
+    else if(command == "ERROR") {
+        FrameObject newFrame("ERROR");
+        return newFrame;
+    }
+    else if(command == "CONNECTED") //for debug only
     {
-        cout<<""<<endl;
+        cout<<"Connected successfuly"<<endl;
     }
-    else if(command == "RECEIPT") //for debug onlyyyyy
+    else if(command == "RECEIPT") //for debug only
     {
-        cout<<""<<endl;
+        cout<<"Got receipt"<<endl;
     }
-
-
+    return frame;
 }
 
 

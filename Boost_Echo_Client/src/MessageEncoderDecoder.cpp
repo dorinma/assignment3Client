@@ -8,7 +8,14 @@ MessageEncoderDecoder::MessageEncoderDecoder() {
     username = "";
     subId = 0;
     receiptId = 0;
+    Client client();
 }
+
+void MessageEncoderDecoder::setClient(Client client) {
+    this->client = client;
+}
+
+Client MessageEncoderDecoder::getClient() { return client; }
 
 string MessageEncoderDecoder::frameToString(FrameObject frameObject) {
     return frameObject.toString();
@@ -49,8 +56,7 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
     } else if (expressions[0] == "return") {
         command = "SEND";
         headers["destination"] = input[1];
-        //string lastOwner = class Book
-        body = "Returning " + expressions[1] + " to " /*last owner*/;
+        body = "Returning " + expressions[1] + " to " + client.getBook(expressions[1])->getLastOwner();
     } else if (expressions[0] == "status") {
         command = "SEND";
         headers["destination"] = input[1];
@@ -75,9 +81,9 @@ FrameObject MessageEncoderDecoder::serverToFrame(string input) {
     command = lines[0];
     for(int i = 1; i < lines.size(); i++) {
         if(lines[i].find(":")) { //header line
-            pair<string, string> head;
-            boost::split(head, input, boost::is_any_of(":"));
-            headers.insert(head);
+            vector<string>exp;
+            boost::split(exp, input, boost::is_any_of(":"));
+            headers[exp[0]] = exp[1];
         }
         else if(lines[i] != "" && !(lines[i].find('\0'))) {
             body = lines[i];

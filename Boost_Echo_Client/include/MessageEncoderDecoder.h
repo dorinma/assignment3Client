@@ -6,6 +6,7 @@
 #define BOOST_ECHO_CLIENT_MESSAGEENCODERDECODER_H
 #include "Book.h"
 #include "FrameObject.h"
+#include "Client.h"
 #include <vector>
 #include <string>
 #include <boost/algorithm/string/split.hpp>
@@ -18,13 +19,15 @@ private:
     int subId;
     int receiptId;
     string username;
+    Client client;
 
 public:
     MessageEncoderDecoder();
     FrameObject serverToFrame(string input);
     FrameObject kbdToFrame(string input);
     string frameToString(FrameObject frameObject);
-
+    void setClient(Client client);
+    Client getClient();
 };
 
 #endif //BOOST_ECHO_CLIENT_MESSAGEENCODERDECODER_H

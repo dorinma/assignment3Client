@@ -4,6 +4,9 @@
 #include <thread>
 #include <StompConnectionHandler.h>
 #include <Protocol.h>
+#include <iostream>
+
+using namespace std;
 
 /**
 * This code assumes that the server replies the exact text the Client sent it (as opposed to the practical session example)
@@ -15,14 +18,13 @@ int main (int argc, char *argv[]) {
     }
     std::string host = argv[1];
     short port = atoi(argv[2]);*/
-    std::mutex _mutexKeyboard;
-    std::mutex _mutexSocket;
-    MessageEncoderDecoder stompEncoderDecoder;
+    mutex _mutexKeyboard;
+    mutex _mutexServer;
+    MessageEncoderDecoder encdec;
     Protocol protocol;
 
 
-    StompConnectionHandler connectionHandler(stompEncoderDecoder,protocol,
-                                             _mutexKeyboard,_mutexSocket);
+    StompConnectionHandler connectionHandler(encdec, protocol, _mutexKeyboard ,_mutexServer);
     /*if (!connectionHandler.connect()) {
         std::cerr << "Cannot connect to " << host << ":" << port << std::endl;
         return 1;

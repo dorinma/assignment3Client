@@ -7,20 +7,19 @@
 #include <string>
 #include <vector>
 #include "FrameObject.h"
-#include "connectionHandler.h"
 #include "Client.h"
 
 using namespace std;
 
 class Protocol {
-
-public:
-    Protocol();
-    Protocol(Client& c);
-    FrameObject* process(FrameObject msg);
-
 private:
     Client client;
+public:
+    Protocol();
+    FrameObject process(FrameObject msg);
+    void setClient(Client c);
+    Client getClient();
 };
+
 
 #endif //BOOST_ECHO_CLIENT_PROTOCOL_H

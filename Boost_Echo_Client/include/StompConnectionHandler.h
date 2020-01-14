@@ -8,19 +8,20 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include "MessageEncoderDecoder.h"
-#include "Protocol.h"
 #include "Client.h"
+#include "Protocol.h"
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
+#include <mutex>
 
 using boost::asio::ip::tcp;
 
 class StompConnectionHandler {
 
 private:
-    const std::string host_;
-    const short port_;
+    std::string host_;
+    short port_;
     boost::asio::io_service io_service_;   // Provides core I/O functionality
     tcp::socket socket_;
     MessageEncoderDecoder encdec;
@@ -28,11 +29,18 @@ private:
     Client client;
     bool isConnected;
     bool shouldTerminate;
+    mutex &_mutexKeyboard;
+    mutex &_mutexServer;
 
 public:
-    StompConnectionHandler();
+    StompConnectionHandler(MessageEncoderDecoder encdec, Protocol protocol, mutex &_mutexKeyboard, mutex &_mutexServer);
+
+    virtual ~StompConnectionHandler();
+
     bool keyboardRun();
+
     bool serverRun();
+
     // Connect to the remote machine
     bool connect();
 
@@ -62,6 +70,7 @@ public:
 
     // Close down the connection properly.
     void close();
+
 };
 
 #endif //BOOST_ECHO_CLIENT_STOMPCONNECTIONHANDLER_H

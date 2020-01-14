@@ -8,7 +8,7 @@ FrameObject::FrameObject(std::string command, std::unordered_map<std::string, st
 
 FrameObject::FrameObject() { }
 
-//FrameObject::FrameObject(std::string command, std::string body) : command(command), body(body) {}
+FrameObject::FrameObject(std::string command) : command(command) {}
 
 std::string FrameObject::toString() {
     std::string output = "";
@@ -23,6 +23,8 @@ std::string FrameObject::toString() {
 }
 
 // Getters & setters
+
+
 const std::string &FrameObject::getCommand() const {
     return command;
 }

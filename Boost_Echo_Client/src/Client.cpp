@@ -3,19 +3,14 @@
 //
 
 #include "Client.h"
-#include "FrameObject.h"
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include "connectionHandler.h"
-#include <boost/lexical_cast.hpp>
-//#include <stdlib.h>
 
-//using namespace std;
 using boost::asio::ip::tcp;
 
+Client::Client() {}
 
-//Constructor
+Client::Client(string username, string passcode) : userName(username), passcode(passcode) {
+    subCount = 0;
+}
 
 const string &Client::getUserName() const {
     return userName;
@@ -53,7 +48,7 @@ unordered_map<string, string> Client::getSubId()  {
     return subId;
 }
 
-void Client::setSubId(const int subId) {}
+void Client::setSubId(unordered_map<string, string> subId) { this->subId = subId; }
 
 void Client::addBook(Book book) {
     this->inventory.push_back(book);

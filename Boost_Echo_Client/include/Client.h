@@ -5,16 +5,16 @@
 #ifndef BOOST_ECHO_CLIENT_CLIENT_H
 #define BOOST_ECHO_CLIENT_CLIENT_H
 
-#include "Protocol.h"
 #include "Book.h"
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <boost/asio.hpp>
 
 using namespace std;
 
 class Client {
 private:
-
     string userName;
     string passcode;
     vector<Book> inventory;
@@ -23,6 +23,8 @@ private:
     string wantedBook;
 
 public:
+    Client();
+
     Client(string username, string passcode);
 
     const string &getUserName() const;
@@ -39,7 +41,7 @@ public:
 
     unordered_map<string, string>getSubId();
 
-    void setSubId(const unordered_map<string string>subId);
+    void setSubId(unordered_map<string, string> subId);
 
     int getSubCount();
 
