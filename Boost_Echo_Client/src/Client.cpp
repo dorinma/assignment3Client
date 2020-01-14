@@ -63,3 +63,38 @@ void Client::addGenre(string subId, string genre) {
     this->getSubId()[subId] = genre;
 }
 
+void Client::setWantedBook(string bookName) { this->wantedBook = bookName; }
+
+string Client::getWantedBook() { return wantedBook; }
+
+void Client::removeBook(string bookName) {
+    int index = 0;
+    int count = -1;
+    for (Book b : inventory) {
+        count++;
+        if (b.getNameBook().compare(bookName))
+            index = count;
+    }
+    inventory.erase(inventory.begin() + index);
+}
+
+bool Client::findBook(string bookName) {
+    for(Book b : inventory) {
+        if(b.getNameBook().compare(bookName))
+            return true;
+    }
+    return false;
+}
+
+Book* Client::getBook(string bookName) {
+    if(!findBook(bookName))
+        return nullptr;
+    else
+    {
+        for(Book b : inventory) {
+            if (b.getNameBook().compare(bookName))
+                return new Book(b.getNameBook(), b.getGenre(), b.getLastOwner(), b.getExists());
+        }
+        return nullptr;
+    }
+}

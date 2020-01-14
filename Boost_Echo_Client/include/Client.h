@@ -20,6 +20,7 @@ private:
     vector<Book> inventory;
     unordered_map<string, string> subId;
     int subCount;
+    string wantedBook;
 
 public:
     Client(string username, string passcode);
@@ -47,6 +48,16 @@ public:
     void addBook(Book book);
 
     void addGenre(string subId, string genre);
+
+    void removeBook(string bookName);
+
+    void setWantedBook(string bookName);
+
+    string getWantedBook();
+
+    bool findBook(string bookName);
+
+    Book* getBook(string bookName);
 };
 
 

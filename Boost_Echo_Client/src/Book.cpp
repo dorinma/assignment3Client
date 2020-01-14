@@ -6,8 +6,11 @@
 
 using namespace std;
 
-Book::Book(const string &nameBook, const string &genre, const string &lastOwner) :
-nameBook(nameBook), genre(genre), lastOwner(lastOwner){}
+Book::Book(string bookName, string genre, string lastOwner) : nameBook(bookName), genre(genre), lastOwner(lastOwner){
+    exists = true;
+}
+
+Book::Book(string bookName, string genre, string lastOwner, bool exists) : nameBook(bookName), genre(genre), lastOwner(lastOwner), exists(exists) {}
 
 const string &Book::getNameBook() const {
     return nameBook;
@@ -32,3 +35,7 @@ const string &Book::getLastOwner() const {
 void Book::setLastOwner(const string &lastOwner) {
     Book::lastOwner = lastOwner;
 }
+
+bool Book::getExists() { return exists; }
+
+void Book::setExists(bool exists) { this->exists = exists; }

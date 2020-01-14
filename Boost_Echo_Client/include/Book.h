@@ -11,13 +11,11 @@ using namespace std;
 
 class Book {
 
-private:
 public:
-    Book(const string &nameBook, const string &genre, const string &lastOwner);
+    Book(string bookName, string genre, string lastOwner, bool exists);
 
+    Book(string bookName, string genre, string lastOwner);
 
-private:
-public:
     const string &getNameBook() const;
 
     void setNameBook(const string &nameBook);
@@ -30,10 +28,15 @@ public:
 
     void setLastOwner(const string &lastOwner);
 
+    void setExists(bool exists);
+
+    bool getExists();
+
 private:
     string nameBook;
     string genre;
     string lastOwner;
+    bool exists;
 
 };
 
