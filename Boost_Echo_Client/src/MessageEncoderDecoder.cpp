@@ -23,7 +23,6 @@ string MessageEncoderDecoder::frameToString(FrameObject frameObject) {
 }
 
 FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
-    //TODO finish method
     vector <string> expressions;
     boost::split(expressions, input, boost::is_any_of(" "));
     std::string command;
@@ -78,24 +77,29 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
 }
 
 FrameObject MessageEncoderDecoder::serverToFrame(string input) {
-
     string command;
     unordered_map <std::string, std::string> headers;
     string body = "";
+
     vector <string> lines;
     boost::split(lines, input, boost::is_any_of("\n"));
+
     command = lines[0];
+
     for(int i = 1; i < lines.size(); i++) {
-        if(lines[i].find(":")) { //header line
-            vector<string>exp;
-            boost::split(exp, input, boost::is_any_of(":"));
-            headers[exp[0]] = exp[1];
+        if (lines[i].size() > 0 && lines[i].find(":") != string::npos) { //header line
+            vector<string> exp;
+            boost::split(exp, lines[i], boost::is_any_of(":"));
+            pair<string, string> head(exp[0], exp[1]);
+            headers.insert(head);
         }
-        else if(lines[i] != "" && !(lines[i].find('\0'))) {
+        else if(lines[i].size() > 0 && !(lines[i].find('\0') != string::npos)) {
             body = lines[i];
         }
+        else if(lines[i].size() > 0 && lines[i].find('\0') != string::npos) {
+            body += "\n" + '\0';
+        }
     }
-
     FrameObject frameObject(command, headers, body);
     return frameObject;
 }

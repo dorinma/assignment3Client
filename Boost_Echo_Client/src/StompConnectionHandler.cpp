@@ -53,36 +53,37 @@ bool StompConnectionHandler::serverRun() {
     while(!shouldTerminate) {
         if (isConnected) {
             string answer;
-            std::cout << "Waiting for message...\n" << std::endl;
+            std::cout << "Waiting for message from the server...\n" << std::endl;
             if (!this->getLine(answer)) {
                 std::cout << "1server Disconnected. Exiting...\n" << std::endl;
                 shouldTerminate = true;
                 break;
             }
-            std::cout << "Got new message\n" << std::endl;
+            std::cout << "Got new message from the server\n" << std::endl;
 
             int len = answer.length();
             answer.resize(len - 1);
-            std::cout << "Reply: " << answer << " " << len << " bytes " << std::endl << std::endl;
+            std::cout << "Reply: \n" << answer << " " << len << " bytes " << std::endl << std::endl;
 
-            FrameObject frameObject = encdec.serverToFrame(answer);
-//            FrameObject response = protocol.process(frameObject);
-//
-//            if (response.getCommand() == "EMPTY") { /*do nothing, no new frame was crated*/ }
-//
-//            else if (response.getCommand() == "ERROR") {
-//                std::cout << "Exiting...\n" << std::endl;
-//                shouldTerminate = true;
-//            }
-//
-//            else {
-//                string result = encdec.frameToString(response);
-//                if(!sendLine(result)) {
-//                    std::cout << "2server Disconnected. Exiting...\n" << std::endl;
-//                    shouldTerminate = true;
-//                    break;
-//                }
-//            }
+           FrameObject frameObject = encdec.serverToFrame(answer);
+            FrameObject response = protocol.process(frameObject);
+
+            if (response.getCommand() == "EMPTY") { /*do nothing, no new frame was crated*/ }
+
+            else if (response.getCommand() == "ERROR") {
+                std::cout << "Exiting...\n" << std::endl;
+                shouldTerminate = true;
+            }
+
+            else {
+
+                string result = encdec.frameToString(response);
+                if(!sendLine(result)) {
+                    std::cout << "2server Disconnected. Exiting...\n" << std::endl;
+                    shouldTerminate = true;
+                    break;
+                }
+            }
         }
     }
 }
@@ -119,6 +120,7 @@ bool StompConnectionHandler::getBytes(char bytes[], unsigned int bytesToRead) {
     try {
         while (!error && bytesToRead > tmp ) {
             tmp += socket_.read_some(boost::asio::buffer(bytes+tmp, bytesToRead-tmp), error);
+
         }
         if(error)
         {

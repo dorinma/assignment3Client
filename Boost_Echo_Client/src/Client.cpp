@@ -93,3 +93,19 @@ Book* Client::getBook(string bookName) {
         return nullptr;
     }
 }
+
+string Client::toString() {
+
+    string output = userName + "\n" +
+                    passcode + "\n" +
+                    "MY BOOKS ARE:";
+    for(Book b : inventory) {
+        output = output + b.getNameBook() + ", genre" + b.getGenre() +
+                ", exist mode:" + to_string(b.getExists()) + ", last owner:" + b.getLastOwner() + "\n";
+    }
+
+
+//    unordered_map<string, string> subId;
+    //string wantedBook;
+    return output;
+}

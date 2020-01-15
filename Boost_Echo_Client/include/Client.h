@@ -60,6 +60,8 @@ public:
     bool findBook(string bookName);
 
     Book* getBook(string bookName);
+
+    string toString();
 };
 
 

@@ -31,10 +31,11 @@ FrameObject Protocol::process(FrameObject msg) {
     {
         string newCommand = "SEND";
 
-        if (body.find("added"))
+        if (body.find("added") != string::npos)
         {
             vector <string> exp;
             boost::split(exp, body, boost::is_any_of(" "));
+
             string bookName = exp[5];
             for(int i = 6; i < exp.size(); i++)
             {
@@ -44,8 +45,7 @@ FrameObject Protocol::process(FrameObject msg) {
             string genre = headers.at("destination");
             string lastOwner = "";
             Book book(bookName, genre, lastOwner);
-
-            if (client.getSubId().count(subId) == 1 && client.getUserName() == exp[0]) //TODO check that running
+            if (client.getSubId().count(subId) == 1 && client.getUserName() == exp[0])
             {
                 if(client.getSubId().at(subId) == genre)
                     client.addBook(book);
@@ -57,10 +57,11 @@ FrameObject Protocol::process(FrameObject msg) {
                 client.addGenre(subId, genre);
                 client.addBook(book);
             }
+            cout<<client.toString()<<endl;
             return frame;
         }//end adding book
 
-        else if(body.find("borrow"))
+        else if(body.find("borrow") != string::npos)
         {
             vector <string> exp;
             boost::split(exp, body, boost::is_any_of(" "));
@@ -78,12 +79,13 @@ FrameObject Protocol::process(FrameObject msg) {
                     newHeaders["destination"] = genre;
                     FrameObject newFrame(newCommand, newHeaders, newBody);
                     currBook.setExists(false);
+                    cout<<client.toString()<<endl;
                     return newFrame;
                 }
             }
         }//end borrowing book
 
-        else if(body.find("has") & !msg.getBody().find("added"))
+        else if(body.find("has") != string::npos & msg.getBody().find("added") == string::npos) //TODO maybe wrong 2nd part
         {
             vector <string> exp;
             boost::split(exp, body, boost::is_any_of(" "));
@@ -101,13 +103,14 @@ FrameObject Protocol::process(FrameObject msg) {
                 FrameObject newFrame(newCommand, newHeaders, newBody);
                 Book *book = new Book(bookName, genre, lastOwner);
                 client.addBook(*book);
+                cout<<client.toString()<<endl;
                 return newFrame;
             }
         }//end taking book
 
-        else if(body.find("Taking")) { return frame; }
+        else if(body.find("Taking") != string::npos) { return frame; }
 
-        else if(body.find("Returning")) {
+        else if(body.find("Returning") != string::npos) {
             vector<string> exp;
             boost::split(exp, body, boost::is_any_of(" "));
             string lastOwner = exp[exp.size() - 1];
@@ -126,10 +129,11 @@ FrameObject Protocol::process(FrameObject msg) {
                 b->setExists(true);
                 client.addBook(*b);
             }
+            cout<<client.toString()<<endl;
             return frame;
         }
 
-        else if(body.find("status"))
+        else if(body.find("status") != string::npos)
         {
             string genre = headers.at("destination");
             unordered_map<string, string> newHeaders;
@@ -144,7 +148,7 @@ FrameObject Protocol::process(FrameObject msg) {
             FrameObject newFrame(newCommand, newHeaders, newBody);
             return newFrame;
         }
-        else if(body.find(":"))
+        else if(body.find(":") != string::npos)
         {
 
         }
