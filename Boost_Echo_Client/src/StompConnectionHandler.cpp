@@ -16,10 +16,10 @@ bool StompConnectionHandler::keyboardRun() {
     while(!shouldTerminate) {
         const short bufsize = 1024;
         char buf[bufsize];
-        cout<<"write somsing:"<<endl;
+        cout<<"write something:"<<endl;
         std::cin.getline(buf, bufsize);
         std::string line(buf);
-
+        cout<<isConnected<<endl;
         vector<string> expressions;
         boost::split(expressions, line, boost::is_any_of(" "));
         if (!isConnected && expressions[0] == "login") {
@@ -28,13 +28,15 @@ bool StompConnectionHandler::keyboardRun() {
             host_ = hostPort[0];
             port_ = boost::lexical_cast<short>(hostPort[1]);
             encdec.setClient(Client(expressions[2], expressions[3]));
+            if (!connect()) {
+                std::cerr << "Cannot connect to " << host_ << ":" << port_ << std::endl;
+                shouldTerminate = true;
+            }
         }
-        if (!connect()) {
-            std::cerr << "Cannot connect to " << host_ << ":" << port_ << std::endl;
-            shouldTerminate = true;
-        }
+
         if (isConnected) {
             string stdOut = encdec.kbdToFrame(line).toString();
+            cout << stdOut << endl;
             int len = stdOut.length(); //TODO - might need to switch to line.length()
             if (!sendLine(stdOut)) {
                 std::cout << "Disconnected. Exiting...\n" << std::endl;
@@ -43,6 +45,7 @@ bool StompConnectionHandler::keyboardRun() {
             }
             std::cout << "Sent " << len + 1 << " bytes to server" << std::endl;
         }
+        cout<<"isConnected" << isConnected << endl;
     }
 }
 
@@ -51,8 +54,8 @@ bool StompConnectionHandler::serverRun() {
         if (isConnected) {
             string answer;
             std::cout << "Waiting for message...\n" << std::endl;
-            if (!getLine(answer)) {
-                std::cout << "Disconnected. Exiting...\n" << std::endl;
+            if (!this->getLine(answer)) {
+                std::cout << "1server Disconnected. Exiting...\n" << std::endl;
                 shouldTerminate = true;
                 break;
             }
@@ -63,23 +66,23 @@ bool StompConnectionHandler::serverRun() {
             std::cout << "Reply: " << answer << " " << len << " bytes " << std::endl << std::endl;
 
             FrameObject frameObject = encdec.serverToFrame(answer);
-            FrameObject response = protocol.process(frameObject);
-
-            if (response.getCommand() == "EMPTY") { /*do nothing, no new frame was crated*/ }
-
-            else if (response.getCommand() == "ERROR") {
-                std::cout << "Exiting...\n" << std::endl;
-                shouldTerminate = true;
-            }
-
-            else {
-                string result = encdec.frameToString(response);
-                if(!sendLine(result)) {
-                    std::cout << "Disconnected. Exiting...\n" << std::endl;
-                    shouldTerminate = true;
-                    break;
-                }
-            }
+//            FrameObject response = protocol.process(frameObject);
+//
+//            if (response.getCommand() == "EMPTY") { /*do nothing, no new frame was crated*/ }
+//
+//            else if (response.getCommand() == "ERROR") {
+//                std::cout << "Exiting...\n" << std::endl;
+//                shouldTerminate = true;
+//            }
+//
+//            else {
+//                string result = encdec.frameToString(response);
+//                if(!sendLine(result)) {
+//                    std::cout << "2server Disconnected. Exiting...\n" << std::endl;
+//                    shouldTerminate = true;
+//                    break;
+//                }
+//            }
         }
     }
 }
@@ -92,11 +95,15 @@ bool StompConnectionHandler::connect() {
         boost::system::error_code error;
         socket_.connect(endpoint, error);
         if (error)
+        {
+            cerr<<"---connect error"<< endl;
             throw boost::system::system_error(error);
+        }
     }
     catch (std::exception& e) {
         std::cerr << "Connection failed (Error: " << e.what() << ')' << std::endl;
         shouldTerminate = true;
+        cout<<"HERE CONNECT BECOMES FALSE" << endl;
         isConnected = false;
         return isConnected;
     }
@@ -114,7 +121,10 @@ bool StompConnectionHandler::getBytes(char bytes[], unsigned int bytesToRead) {
             tmp += socket_.read_some(boost::asio::buffer(bytes+tmp, bytesToRead-tmp), error);
         }
         if(error)
+        {
+            cerr<<"---get bytes error"<< endl;
             throw boost::system::system_error(error);
+        }
     } catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
         return false;
@@ -130,7 +140,10 @@ bool StompConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
             tmp += socket_.write_some(boost::asio::buffer(bytes + tmp, bytesToWrite - tmp), error);
         }
         if(error)
+        {
+            cerr<<"---send bytes error"<< endl;
             throw boost::system::system_error(error);
+        }
     } catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
         return false;

@@ -3,6 +3,7 @@
 //
 
 #include <include/MessageEncoderDecoder.h>
+#include <iostream>
 
 MessageEncoderDecoder::MessageEncoderDecoder() {
     username = "";
@@ -38,25 +39,30 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         headers["login"] = expressions[2];
         headers["passcode"] = expressions[3];
         username = expressions[2];
+
     } else if (expressions[0] == "join") {
         command = "SUBSCRIBE";
         headers["destination"] = expressions[1];
         subId++;
-        headers["id"] = subId;
+        headers["id"] = to_string(subId);
         receiptId++;
-        headers["receipt"] = receiptId;
-    } else if (expressions[0] == "add") {
+        headers["receipt"] = to_string(receiptId);
+
+    } else if (expressions[0] == "add") { //TODO wont get names with more than one word
         command = "SEND";
         headers["destination"] = expressions[1];
-        body = username + " has added the book " + input[2];
+        body = username + " has added the book " + expressions[2];
+
     } else if (expressions[0] == "borrow") {
         command = "SEND";
         headers["destination"] = expressions[1];
-        body = username + " wish to borrow " + input[2];
+        body = username + " wish to borrow " + expressions[2];
+
     } else if (expressions[0] == "return") {
         command = "SEND";
         headers["destination"] = input[1];
         body = "Returning " + expressions[1] + " to " + client.getBook(expressions[1])->getLastOwner();
+
     } else if (expressions[0] == "status") {
         command = "SEND";
         headers["destination"] = input[1];
@@ -64,7 +70,7 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
     } else if (expressions[0] == "logout") {
         command = "DISCONNECT";
         receiptId++;
-        headers["receipt"] = receiptId;
+        headers["receipt"] = to_string(receiptId);
     }
 
     FrameObject *frameObject = new FrameObject(command, headers, body);

@@ -29,7 +29,11 @@ bool connectionHandler::connect() {
 		boost::system::error_code error;
 		socket_.connect(endpoint, error);
 		if (error)
-			throw boost::system::system_error(error);
+        {
+            cout<<"----connect error"<< endl;
+
+            throw boost::system::system_error(error);
+        }
     }
     catch (std::exception& e) {
         std::cerr << "Connection failed (Error: " << e.what() << ')' << std::endl;
@@ -46,7 +50,10 @@ bool connectionHandler::getBytes(char bytes[], unsigned int bytesToRead) {
 			tmp += socket_.read_some(boost::asio::buffer(bytes+tmp, bytesToRead-tmp), error);			
         }
 		if(error)
-			throw boost::system::system_error(error);
+        {
+            cerr<<"---get bytes error"<< endl;
+            throw boost::system::system_error(error);
+        }
     } catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
         return false;
@@ -62,7 +69,10 @@ bool connectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
 			tmp += socket_.write_some(boost::asio::buffer(bytes + tmp, bytesToWrite - tmp), error);
         }
 		if(error)
-			throw boost::system::system_error(error);
+        {
+            cerr<<"----send bytes error"<< endl;
+            throw boost::system::system_error(error);
+        }
     } catch (std::exception& e) {
         std::cerr << "recv failed (Error: " << e.what() << ')' << std::endl;
         return false;

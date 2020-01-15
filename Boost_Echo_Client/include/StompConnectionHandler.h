@@ -27,7 +27,7 @@ private:
     MessageEncoderDecoder encdec;
     Protocol protocol;
     Client client;
-    bool isConnected;
+    bool isConnected = false;
     bool shouldTerminate = false;
     mutex &_mutexKeyboard;
     mutex &_mutexServer;
