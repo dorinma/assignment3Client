@@ -2,8 +2,8 @@
 // Created by dorin on 13/01/2020.
 //
 
-#include <include/StompConnectionHandler.h>
-
+//#include <include/StompConnectionHandler.h>
+#include "StompConnectionHandler.h"
 StompConnectionHandler::StompConnectionHandler(MessageEncoderDecoder encdec, Protocol protocol, mutex &_mutexKeyboard, mutex &_mutexServer) :
                         encdec(encdec), protocol(protocol), host_("0.0.0.0"), port_(7777), io_service_(), socket_(io_service_),
                                 _mutexKeyboard(_mutexKeyboard), _mutexServer(_mutexServer){
@@ -19,7 +19,7 @@ bool StompConnectionHandler::keyboardRun() {
         cout<<"write something:"<<endl;
         std::cin.getline(buf, bufsize);
         std::string line(buf);
-        cout<<isConnected<<endl;
+        //cout<<isConnected<<endl;
         vector<string> expressions;
         boost::split(expressions, line, boost::is_any_of(" "));
         if (!isConnected && expressions[0] == "login") {
@@ -36,7 +36,7 @@ bool StompConnectionHandler::keyboardRun() {
 
         if (isConnected) {
             string stdOut = encdec.kbdToFrame(line).toString();
-            cout << stdOut << endl;
+            //cout << stdOut << endl;
             int len = stdOut.length(); //TODO - might need to switch to line.length()
             if (!sendLine(stdOut)) {
                 std::cout << "Disconnected. Exiting...\n" << std::endl;
@@ -45,7 +45,7 @@ bool StompConnectionHandler::keyboardRun() {
             }
             std::cout << "Sent " << len + 1 << " bytes to server" << std::endl;
         }
-        cout<<"isConnected" << isConnected << endl;
+        //cout<<"isConnected" << isConnected << endl;
     }
 }
 
@@ -53,19 +53,19 @@ bool StompConnectionHandler::serverRun() {
     while(!shouldTerminate) {
         if (isConnected) {
             string answer;
-            std::cout << "Waiting for message from the server...\n" << std::endl;
+            //std::cout << "Waiting for message from the server...\n" << std::endl;
             if (!this->getLine(answer)) {
                 std::cout << "1server Disconnected. Exiting...\n" << std::endl;
                 shouldTerminate = true;
                 break;
             }
-            std::cout << "Got new message from the server\n" << std::endl;
+            //std::cout << "Got new message from the server\n" << std::endl;
 
             int len = answer.length();
             answer.resize(len - 1);
             std::cout << "Reply: \n" << answer << " " << len << " bytes " << std::endl << std::endl;
 
-           FrameObject frameObject = encdec.serverToFrame(answer);
+            FrameObject frameObject = encdec.serverToFrame(answer);
             FrameObject response = protocol.process(frameObject);
 
             if (response.getCommand() == "EMPTY") { /*do nothing, no new frame was crated*/ }
@@ -104,7 +104,7 @@ bool StompConnectionHandler::connect() {
     catch (std::exception& e) {
         std::cerr << "Connection failed (Error: " << e.what() << ')' << std::endl;
         shouldTerminate = true;
-        cout<<"HERE CONNECT BECOMES FALSE" << endl;
+        //cout<<"HERE CONNECT BECOMES FALSE" << endl;
         isConnected = false;
         return isConnected;
     }

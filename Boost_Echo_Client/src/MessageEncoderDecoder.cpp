@@ -2,7 +2,8 @@
 // Created by dorin on 13/01/2020.
 //
 
-#include <include/MessageEncoderDecoder.h>
+#include "MessageEncoderDecoder.h"
+//#include <include/MessageEncoderDecoder.h>
 #include <iostream>
 
 MessageEncoderDecoder::MessageEncoderDecoder() {
@@ -33,10 +34,20 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         command = "CONNECT";
         vector <std::string> hostPort;
         boost::split(hostPort, expressions[1], boost::is_any_of(":"));
-        headers["accept-version"] = "1.2";
+        pair<string, string> header1("accept-version", "1.2");
+        headers.insert(header1);
+        pair<string, string> header2("host", hostPort[0]);
+        headers.insert(header2);
+        pair<string, string> header3("login", expressions[2]);
+        headers.insert(header3);
+        pair<string, string> header4("passcode", expressions[3]);
+        headers.insert(header4);
+
+/*      headers["accept-version"] = "1.2";
         headers["host"] = hostPort[0];
         headers["login"] = expressions[2];
-        headers["passcode"] = expressions[3];
+        headers["passcode"] = expressions[3];*/
+
         username = expressions[2];
 
     } else if (expressions[0] == "join") {
@@ -47,24 +58,36 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         receiptId++;
         headers["receipt"] = to_string(receiptId);
 
-    } else if (expressions[0] == "add") { //TODO wont get names with more than one word
+    } else if (expressions[0] == "add") {
         command = "SEND";
         headers["destination"] = expressions[1];
-        body = username + " has added the book " + expressions[2];
+        string bookName = expressions[2];
+        for (int j = 3; j < expressions.size(); ++j) {
+            bookName += " " + expressions[j];
+        }
+        body = username + " has added the book " + bookName;
 
     } else if (expressions[0] == "borrow") {
         command = "SEND";
         headers["destination"] = expressions[1];
-        body = username + " wish to borrow " + expressions[2];
+        string bookName = expressions[2];
+        for (int j = 3; j < expressions.size(); ++j) {
+            bookName += " " + expressions[j];
+        }
+        body = username + " wish to borrow " + bookName;
 
     } else if (expressions[0] == "return") {
         command = "SEND";
-        headers["destination"] = input[1];
-        body = "Returning " + expressions[1] + " to " + client.getBook(expressions[1])->getLastOwner();
+        headers["destination"] = expressions[1];
+        string bookName = expressions[2];
+        for (int j = 2; j < expressions.size(); ++j) {
+            bookName += " " + expressions[j];
+        }
+        body = "Returning " + bookName + " to " + client.getBook(bookName)->getLastOwner();
 
     } else if (expressions[0] == "status") {
         command = "SEND";
-        headers["destination"] = input[1];
+        headers["destination"] = expressions[1];
         body = "book status";
     } else if (expressions[0] == "logout") {
         command = "DISCONNECT";
@@ -87,11 +110,15 @@ FrameObject MessageEncoderDecoder::serverToFrame(string input) {
     command = lines[0];
 
     for(int i = 1; i < lines.size(); i++) {
-        if (lines[i].size() > 0 && lines[i].find(":") != string::npos) { //header line
-            vector<string> exp;
-            boost::split(exp, lines[i], boost::is_any_of(":"));
-            pair<string, string> head(exp[0], exp[1]);
-            headers.insert(head);
+        if (lines[i].size() > 0 && lines[i].find(":") != string::npos) {
+            if(lines[i-1].length() > 0) { //this is an header line
+                vector<string> exp;
+                boost::split(exp, lines[i], boost::is_any_of(":"));
+                pair<string, string> head(exp[0], exp[1]);
+                headers.insert(head);
+            }
+            else //this is the body
+                body = lines[i];
         }
         else if(lines[i].size() > 0 && !(lines[i].find('\0') != string::npos)) {
             body = lines[i];
