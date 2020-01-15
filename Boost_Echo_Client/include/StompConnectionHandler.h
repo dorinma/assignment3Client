@@ -28,7 +28,7 @@ private:
     Protocol protocol;
     Client client;
     bool isConnected;
-    bool shouldTerminate;
+    bool shouldTerminate = false;
     mutex &_mutexKeyboard;
     mutex &_mutexServer;
 

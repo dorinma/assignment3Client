@@ -16,6 +16,7 @@ bool StompConnectionHandler::keyboardRun() {
     while(!shouldTerminate) {
         const short bufsize = 1024;
         char buf[bufsize];
+        cout<<"write somsing:"<<endl;
         std::cin.getline(buf, bufsize);
         std::string line(buf);
 
@@ -138,11 +139,11 @@ bool StompConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
 }
 
 bool StompConnectionHandler::getLine(std::string& line) {
-    return getFrameAscii(line, '\n');
+    return getFrameAscii(line, '\0');
 }
 
 bool StompConnectionHandler::sendLine(std::string& line) {
-    return sendFrameAscii(line, '\n');
+    return sendFrameAscii(line, '\0');
 }
 
 bool StompConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
