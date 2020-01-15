@@ -2,7 +2,7 @@
 // Created by dorin on 13/01/2020.
 //
 
-#include "MessageEncoderDecoder.h"
+#include <include/MessageEncoderDecoder.h>
 
 MessageEncoderDecoder::MessageEncoderDecoder() {
     username = "";

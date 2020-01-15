@@ -2,7 +2,7 @@
 // Created by zeirah@wincs.cs.bgu.ac.il on 12/01/2020.
 //
 
-#include "FrameObject.h"
+#include <include/FrameObject.h>
 
 FrameObject::FrameObject(std::string command, std::unordered_map<std::string, std::string> headers, std::string body) : command(command), headers(headers), body(body) {}
 

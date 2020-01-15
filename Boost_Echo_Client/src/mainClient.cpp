@@ -1,10 +1,10 @@
 #include <stdlib.h>
-#include <connectionHandler.h>
 #include <mutex>
 #include <thread>
-#include <StompConnectionHandler.h>
-#include <Protocol.h>
 #include <iostream>
+#include <include/MessageEncoderDecoder.h>
+#include <include/StompConnectionHandler.h>
+#include <include/Protocol.h>
 
 using namespace std;
 

@@ -1,5 +1,5 @@
-#include <connectionHandler.h>
-#include "MessageEncoderDecoder.h"
+
+#include <include/connectionHandler.h>
 
 using boost::asio::ip::tcp;
 

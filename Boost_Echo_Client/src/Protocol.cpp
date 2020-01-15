@@ -2,11 +2,11 @@
 // Created by zeirah@wincs.cs.bgu.ac.il on 12/01/2020.
 //
 
-#include "Protocol.h"
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <iostream>
+#include <include/Protocol.h>
 
 using namespace std;
 
