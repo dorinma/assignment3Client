@@ -19,14 +19,14 @@ private:
     int subId;
     int receiptId;
     string username;
-    Client client;
+    Client *client;
 
 public:
     MessageEncoderDecoder();
     FrameObject serverToFrame(string input);
     FrameObject kbdToFrame(string input);
     string frameToString(FrameObject frameObject);
-    void setClient(Client client);
+    void setClient(Client *client);
     Client getClient();
 };
 

@@ -32,6 +32,8 @@ public:
 
     bool getExists();
 
+    string toString();
+
 private:
     string nameBook;
     string genre;

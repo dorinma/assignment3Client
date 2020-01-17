@@ -19,7 +19,6 @@ bool StompConnectionHandler::keyboardRun() {
         cout<<"write something:"<<endl;
         std::cin.getline(buf, bufsize);
         std::string line(buf);
-        //cout<<isConnected<<endl;
         vector<string> expressions;
         boost::split(expressions, line, boost::is_any_of(" "));
         if (!isConnected && expressions[0] == "login") {
@@ -27,7 +26,8 @@ bool StompConnectionHandler::keyboardRun() {
             boost::split(hostPort, expressions[1], boost::is_any_of(":"));
             host_ = hostPort[0];
             port_ = boost::lexical_cast<short>(hostPort[1]);
-            encdec.setClient(Client(expressions[2], expressions[3]));
+            client.setUserName(expressions[2]);
+            client.setPasscode(expressions[3]);
             if (!connect()) {
                 std::cerr << "Cannot connect to " << host_ << ":" << port_ << std::endl;
                 shouldTerminate = true;
@@ -36,7 +36,8 @@ bool StompConnectionHandler::keyboardRun() {
 
         if (isConnected) {
             string stdOut = encdec.kbdToFrame(line).toString();
-            //cout << stdOut << endl;
+            cout<<"------message out------"<<endl;
+            cout<<stdOut<<endl;
             int len = stdOut.length(); //TODO - might need to switch to line.length()
             if (!sendLine(stdOut)) {
                 std::cout << "Disconnected. Exiting...\n" << std::endl;
@@ -63,10 +64,16 @@ bool StompConnectionHandler::serverRun() {
 
             int len = answer.length();
             answer.resize(len - 1);
-            std::cout << "Reply: \n" << answer << " " << len << " bytes " << std::endl << std::endl;
+           // std::cout << "Reply:" << client.getUserName() << "\n" << answer << "\n" << len << " bytes " << std::endl << std::endl;
 
             FrameObject frameObject = encdec.serverToFrame(answer);
+            //protocol.setClient(client);
+
+            cout<<"------message in------"<<endl;
+            std::cout << answer  << std::endl;
             FrameObject response = protocol.process(frameObject);
+            cout<<"------client info------"<<endl;
+            std::cout << this->client.toString()  << std::endl;
 
             if (response.getCommand() == "EMPTY") { /*do nothing, no new frame was crated*/ }
 
@@ -76,8 +83,8 @@ bool StompConnectionHandler::serverRun() {
             }
 
             else {
-
                 string result = encdec.frameToString(response);
+                //cout <<"after toSTring print:::: " + result << endl;
                 if(!sendLine(result)) {
                     std::cout << "2server Disconnected. Exiting...\n" << std::endl;
                     shouldTerminate = true;
@@ -108,8 +115,8 @@ bool StompConnectionHandler::connect() {
         isConnected = false;
         return isConnected;
     }
-    protocol.setClient(client);
-    encdec.setClient(client);
+    protocol.setClient(&client);
+    encdec.setClient(&client);
     isConnected = true;
     return isConnected;
 }
@@ -138,6 +145,7 @@ bool StompConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
     int tmp = 0;
     boost::system::error_code error;
     try {
+        std::lock_guard<std::mutex> lockGuard(_mutexServer); //syncing writing and sending on the same time
         while (!error && bytesToWrite > tmp ) {
             tmp += socket_.write_some(boost::asio::buffer(bytes + tmp, bytesToWrite - tmp), error);
         }

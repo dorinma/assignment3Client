@@ -47,7 +47,7 @@ public:
 
     void setSubCount(int subCount);
 
-    void addBook(Book book);
+    void addBook(string bookName,string genre, string lastOwner);
 
     void addGenre(string subId, string genre);
 
@@ -62,6 +62,10 @@ public:
     Book* getBook(string bookName);
 
     string toString();
+
+    void setExistMode(string bookName, string genre, string owner, bool exist);
+
+    string getLastOwner(string bookName);
 };
 
 

@@ -13,11 +13,9 @@ MessageEncoderDecoder::MessageEncoderDecoder() {
     Client client();
 }
 
-void MessageEncoderDecoder::setClient(Client client) {
+void MessageEncoderDecoder::setClient(Client *client) {
     this->client = client;
 }
-
-Client MessageEncoderDecoder::getClient() { return client; }
 
 string MessageEncoderDecoder::frameToString(FrameObject frameObject) {
     return frameObject.toString();
@@ -50,7 +48,8 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
 
         username = expressions[2];
 
-    } else if (expressions[0] == "join") {
+    }
+    else if (expressions[0] == "join") {
         command = "SUBSCRIBE";
         headers["destination"] = expressions[1];
         subId++;
@@ -58,7 +57,8 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         receiptId++;
         headers["receipt"] = to_string(receiptId);
 
-    } else if (expressions[0] == "add") {
+    }
+    else if (expressions[0] == "add") {
         command = "SEND";
         headers["destination"] = expressions[1];
         string bookName = expressions[2];
@@ -67,7 +67,8 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         }
         body = username + " has added the book " + bookName;
 
-    } else if (expressions[0] == "borrow") {
+    }
+    else if (expressions[0] == "borrow") {
         command = "SEND";
         headers["destination"] = expressions[1];
         string bookName = expressions[2];
@@ -76,27 +77,30 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         }
         body = username + " wish to borrow " + bookName;
 
-    } else if (expressions[0] == "return") {
+    }
+    else if (expressions[0] == "return") {
+
         command = "SEND";
         headers["destination"] = expressions[1];
         string bookName = expressions[2];
-        for (int j = 2; j < expressions.size(); ++j) {
+        for (int j = 3; j < expressions.size(); ++j) {
             bookName += " " + expressions[j];
         }
-        body = "Returning " + bookName + " to " + client.getBook(bookName)->getLastOwner();
-
-    } else if (expressions[0] == "status") {
+        body = "Returning " + bookName + " to " + client->getLastOwner(bookName);
+    }
+    else if (expressions[0] == "status") {
         command = "SEND";
         headers["destination"] = expressions[1];
         body = "book status";
-    } else if (expressions[0] == "logout") {
+    }
+    else if (expressions[0] == "logout") {
         command = "DISCONNECT";
         receiptId++;
         headers["receipt"] = to_string(receiptId);
     }
 
-    FrameObject *frameObject = new FrameObject(command, headers, body);
-    return *frameObject;
+    FrameObject frameObject(command, headers, body);
+    return frameObject;
 }
 
 FrameObject MessageEncoderDecoder::serverToFrame(string input) {

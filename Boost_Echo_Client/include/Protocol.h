@@ -13,11 +13,11 @@ using namespace std;
 
 class Protocol {
 private:
-    Client client;
+    Client *client;
 public:
     Protocol();
     FrameObject process(FrameObject msg);
-    void setClient(Client c);
+    void setClient(Client *c);
     Client getClient();
 };
 

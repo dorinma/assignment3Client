@@ -14,9 +14,8 @@ Protocol::Protocol() {
     Client client();
 }
 
-Client Protocol::getClient() { return client; }
 
-void Protocol::setClient(Client c) {
+void Protocol::setClient(Client *c) {
     client = c;
 }
 
@@ -44,20 +43,21 @@ FrameObject Protocol::process(FrameObject msg) {
             string subId = headers.at("subscription");
             string genre = headers.at("destination");
             string lastOwner = "";
-            Book book(bookName, genre, lastOwner);
-            if (client.getSubId().count(subId) == 1 && client.getUserName() == exp[0])
+            if (client->getSubId().count(subId) == 1 && client->getUserName() == exp[0])
             {
-                if(client.getSubId().at(subId) == genre)
-                    client.addBook(book);
+                if(client->getSubId().at(subId) == genre)
+                    client->addBook(bookName, genre, lastOwner);
                 else
                     std::cout<<"genre and subscription id dont match"<<endl;
             }
             else
             {
-                client.addGenre(subId, genre);
-                client.addBook(book);
+                if(client->getUserName() == exp[0])
+                {
+                    client->addGenre(subId, genre);
+                    client->addBook(bookName, genre, lastOwner);
+                }
             }
-            cout<<client.toString()<<endl;
             return frame;
         }//end adding book
 
@@ -70,22 +70,30 @@ FrameObject Protocol::process(FrameObject msg) {
             {
                 bookName = bookName + " " + exp[i];
             }
+
             string genre = headers.at("destination");
-            for(Book currBook : client.getInventory())
+
+            if(exp[0] == client->getUserName())
+                this->client->setWantedBook(bookName);
+
+            if(exp[0] != client->getUserName())
             {
-                if(currBook.getExists() && currBook.getNameBook().compare(bookName)) {
-                    string newBody = client.getUserName() + " has " + bookName;
-                    unordered_map<string, string> newHeaders;
-                    newHeaders["destination"] = genre;
-                    FrameObject newFrame(newCommand, newHeaders, newBody);
-                    currBook.setExists(false);
-                    cout<<client.toString()<<endl;
-                    return newFrame;
+                for(Book currBook : client->getInventory())
+                {
+                    if(currBook.getExists() && currBook.getNameBook() == bookName) {
+                        string newBody = client->getUserName() + " has " + bookName;
+                        unordered_map<string, string> newHeaders;
+                        newHeaders["destination"] = genre;
+                        FrameObject newFrame(newCommand, newHeaders, newBody);
+                        this->client->setExistMode(bookName, genre, currBook.getLastOwner(), false);
+                        return newFrame;
+                    }
                 }
             }
+
         }//end borrowing book
 
-        else if(body.find("has") != string::npos & msg.getBody().find("added") == string::npos) //TODO maybe wrong 2nd part
+        else if(body.find("has") != string::npos & msg.getBody().find("added") == string::npos)
         {
             vector <string> exp;
             boost::split(exp, body, boost::is_any_of(" "));
@@ -96,19 +104,36 @@ FrameObject Protocol::process(FrameObject msg) {
                 bookName = bookName + " " + exp[i];
             }
             string genre = headers.at("destination");
-            if(client.getWantedBook().compare(bookName)) {
+            if(client->getWantedBook() == bookName) { //TODO verify only client will enter here
                 string newBody = "Taking " + bookName + " from " + lastOwner;
                 unordered_map<string, string> newHeaders;
                 newHeaders["destination"] = genre;
                 FrameObject newFrame(newCommand, newHeaders, newBody);
-                Book *book = new Book(bookName, genre, lastOwner);
-                client.addBook(*book);
-                cout<<client.toString()<<endl;
+                client->addBook(bookName, genre, lastOwner);
+                //cout<<client->toString()<<endl;
+                client->setWantedBook("");
                 return newFrame;
             }
         }//end taking book
 
-        else if(body.find("Taking") != string::npos) { return frame; }
+        else if(body.find("Taking") != string::npos) {
+
+//            vector <string> exp;
+//            boost::split(exp, body, boost::is_any_of(" "));
+//            string owner = exp[exp.size()-1];
+//            string bookName = exp[1];
+////            for(int i = 3; i < exp.size() - 2; i++) ///TODO to find book name
+////            {
+////                bookName = bookName + " " + exp[i];
+////            }
+//            if(client->getUserName() != owner)
+//            {login 10.100.102.9:8888 HADAS HADAS
+//                for(Book currBook : client->getInventory())
+//                    if (currBook.getNameBook() == bookName)
+//                        this->client->setExistMode(bookName, currBook.getGenre(), currBook.getLastOwner() ,true);
+//            }
+            return frame;
+        }
 
         else if(body.find("Returning") != string::npos) {
             vector<string> exp;
@@ -120,16 +145,16 @@ FrameObject Protocol::process(FrameObject msg) {
                 bookName = bookName + " " + exp[i];
             }
             //return from
-            if(client.findBook(bookName)) {
-                client.removeBook(bookName);
+            if(client->findBook(bookName)) {
+                client->removeBook(bookName);
             }
             //return to
-            else if (client.getUserName().compare(lastOwner)) {
-                Book* b = client.getBook(bookName);
-                b->setExists(true);
-                client.addBook(*b);
+            else if (client->getUserName() == lastOwner) {
+                //Book* b = client->getBook(bookName);
+                //b->setExists(true);
+                client->setExistMode(bookName, genre, lastOwner, true);
             }
-            cout<<client.toString()<<endl;
+            cout<<frame.toString()<<endl;
             return frame;
         }
 
@@ -138,18 +163,20 @@ FrameObject Protocol::process(FrameObject msg) {
             string genre = headers.at("destination");
             unordered_map<string, string> newHeaders;
             newHeaders["destination"] = genre;
-            string newBody = client.getUserName() + ":";
-            for(int i = 0; i < client.getInventory().size(); i++) {
-                newBody += client.getInventory()[i].getNameBook();
-                if (client.getInventory().size() != 1 & i < client.getInventory().size() - 1)
-                    newBody += ",";
+            string newBody = client->getUserName() + ": ";
+            for(int i = 0; i < client->getInventory().size(); i++)
+            {
+                if(client->getInventory()[i].getGenre() == genre)
+                {
+                    newBody += client->getInventory()[i].getNameBook() + ", ";
+                }
             }
+            FrameObject newFrame("SEND", newHeaders, newBody);
+            //cout<< "STATUS FRAME BOOKS\n" + newFrame.toString() << endl;
 
-            FrameObject newFrame(newCommand, newHeaders, newBody);
             return newFrame;
         }
-        else if(body.find(":") != string::npos)
-        {
+        else if(body.find(":") != string::npos){
 
         }
         return frame;
@@ -158,12 +185,10 @@ FrameObject Protocol::process(FrameObject msg) {
         FrameObject newFrame("ERROR");
         return newFrame;
     }
-    else if(command == "CONNECTED") //for debug only
-    {
+    else if(command == "CONNECTED") {//for debug only
         cout<<"Connected successfuly"<<endl;
     }
-    else if(command == "RECEIPT") //for debug only
-    {
+    else if(command == "RECEIPT"){ //for debug only
         cout<<"Got receipt"<<endl;
     }
     return frame;

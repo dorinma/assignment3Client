@@ -40,3 +40,19 @@ void Book::setLastOwner(const string &lastOwner) {
 bool Book::getExists() { return exists; }
 
 void Book::setExists(bool exists) { this->exists = exists; }
+
+string Book::toString() {
+    string output = "BOOK: " + this->nameBook+ ",'";
+    output += "\tgenre: " + this->genre + ",";
+    output += "\tlastOwner: " + this->lastOwner+ ",";
+    if(this->exists)
+    {
+        output += "\texist: true";
+    }
+    else
+    {
+        output += "\texist: false";
+    }
+
+    return output;
+}

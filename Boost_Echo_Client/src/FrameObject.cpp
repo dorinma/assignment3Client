@@ -23,9 +23,6 @@ std::string FrameObject::toString() {
     return output;
 }
 
-// Getters & setters
-
-
 const std::string &FrameObject::getCommand() const {
     return command;
 }
