@@ -154,7 +154,7 @@ FrameObject Protocol::process(FrameObject msg) {
                 //b->setExists(true);
                 client->setExistMode(bookName, genre, lastOwner, true);
             }
-            cout<<frame.toString()<<endl;
+            //cout<<frame.toString()<<endl;
             return frame;
         }
 
@@ -185,11 +185,12 @@ FrameObject Protocol::process(FrameObject msg) {
         FrameObject newFrame("ERROR");
         return newFrame;
     }
-    else if(command == "CONNECTED") {//for debug only
-        cout<<"Connected successfuly"<<endl;
+    else if(command == "CONNECTED") {
+        cout<<"Login successful"<<endl;
     }
-    else if(command == "RECEIPT"){ //for debug only
-        cout<<"Got receipt"<<endl;
+    else if(command == "RECEIPT"){
+        
+        //cout<<"Got receipt"<<endl;
     }
     return frame;
 }

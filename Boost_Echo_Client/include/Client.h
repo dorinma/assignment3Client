@@ -25,6 +25,8 @@ private:
 public:
     Client();
 
+    ~Client();
+
     Client(string username, string passcode);
 
     const string &getUserName() const;

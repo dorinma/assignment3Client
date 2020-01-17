@@ -14,6 +14,11 @@ Client::Client(string username, string passcode) : userName(username), passcode(
     subCount = 0;
 }
 
+Client::~Client() {
+
+}
+
+
 const string &Client::getUserName() const {
     return userName;
 }
@@ -66,12 +71,6 @@ void Client::setWantedBook(string bookName) { this->wantedBook = bookName; }
 string Client::getWantedBook() { return wantedBook; }
 
 void Client::removeBook(string bookName) {
-//    string test = "------- ";
-//    for (Book b : inventory) {
-//        test += b.getNameBook() + ", ";
-//    }
-//    cout<< test << endl;
-
     int index = 0;
     int count = -1;
     for (Book b : inventory) {
@@ -80,11 +79,6 @@ void Client::removeBook(string bookName) {
             index = count;
     }
     inventory.erase(inventory.begin() + index);
-//    test = "------- ";
-//    for (Book b : inventory) {
-//        test += b.getNameBook() + ", ";
-//    }
-//    cout<< test << endl;
 }
 
 bool Client::findBook(string bookName) {
@@ -110,18 +104,18 @@ bool Client::findBook(string bookName) {
 
 string Client::toString() {
 
-    string output="name: "+this->userName+"\npass: "+ this->passcode+"\n";
+    string output = "name: "+this->userName + "\npass: "+ this->passcode+"\n";
                     "MY BOOKS ARE: \n";
     for(Book b : inventory) {
         output = output + b.getNameBook() + ", genre " + b.getGenre() +
                 ", exist mode:" ;
                 if (b.getExists() == 1)
-                    output = output + "true";
+                    output += "true";
                 else
-                    output = output + "false";
-               output = output + ", last owner:" + b.getLastOwner() + "\n";
+                    output += "false";
+               output += ", last owner:" + b.getLastOwner() + "\n";
     }
-    output=output+"wantedBookName: "+this->wantedBook+'\n';
+    output += "wantedBookName: "+this->wantedBook+'\n';
 
     return output;
 }
@@ -138,5 +132,6 @@ string Client::getLastOwner(string bookName) {
         if (b.getNameBook() == bookName)
             return b.getLastOwner();
     }
+    //TODO what to do with this?
     return "problemmmmmm";
 }

@@ -41,11 +41,6 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         pair<string, string> header4("passcode", expressions[3]);
         headers.insert(header4);
 
-/*      headers["accept-version"] = "1.2";
-        headers["host"] = hostPort[0];
-        headers["login"] = expressions[2];
-        headers["passcode"] = expressions[3];*/
-
         username = expressions[2];
 
     }
@@ -56,7 +51,7 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         headers["id"] = to_string(subId);
         receiptId++;
         headers["receipt"] = to_string(receiptId);
-
+        receipts[receiptId] = "SUBSCRIBE";
     }
     else if (expressions[0] == "add") {
         command = "SEND";
@@ -97,6 +92,24 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         command = "DISCONNECT";
         receiptId++;
         headers["receipt"] = to_string(receiptId);
+        receipts[receiptId] = "DISCONNECT";
+    }
+    else if (expressions[0] == "exit") {
+        command = "UNSUBSCRIBE";
+        headers["destination"] = expressions[1];
+        //get the wanted subscription id
+        string thisSubId = "";
+        for (pair<string, string> element : client->getSubId())
+        {
+            if(element.second == expressions[1])
+                thisSubId = element.first;
+        }
+        headers["id"] = thisSubId;
+        client->getSubId().erase(expressions[1]); //delete this genre from user's subscriptions
+        //TODO should happen here also? happens in server side already. make sure!
+        receiptId++;
+        headers["receipt"] = to_string(receiptId);
+        receipts[receiptId] = "UNSUBSCRIBE";
     }
 
     FrameObject frameObject(command, headers, body);
@@ -134,3 +147,5 @@ FrameObject MessageEncoderDecoder::serverToFrame(string input) {
     FrameObject frameObject(command, headers, body);
     return frameObject;
 }
+
+unordered_map<int, string> MessageEncoderDecoder::getReceipts() { return receipts; }

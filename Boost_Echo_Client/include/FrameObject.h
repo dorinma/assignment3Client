@@ -17,7 +17,7 @@ public:
 
     const std::string &getCommand() const;
     void setCommand(const std::string &command);
-    const std::unordered_map<std::string, std::string> &getHeaders() const;
+    std::unordered_map<std::string, std::string> getHeaders();
     void setHeaders(const std::unordered_map<std::string, std::string> &headers);
     const std::string &getBody() const;
     void setBody(const std::string &body);

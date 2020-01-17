@@ -20,6 +20,7 @@ private:
     int receiptId;
     string username;
     Client *client;
+    std::unordered_map<int, string> receipts;
 
 public:
     MessageEncoderDecoder();
@@ -28,6 +29,7 @@ public:
     string frameToString(FrameObject frameObject);
     void setClient(Client *client);
     Client getClient();
+    unordered_map<int, string> getReceipts();
 };
 
 #endif //BOOST_ECHO_CLIENT_MESSAGEENCODERDECODER_H

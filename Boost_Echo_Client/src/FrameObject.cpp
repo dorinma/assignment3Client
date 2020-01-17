@@ -29,9 +29,7 @@ const std::string &FrameObject::getCommand() const {
 
 void FrameObject::setCommand(const std::string &command) { this->command = command; }
 
-const std::unordered_map<std::string, std::string> &FrameObject::getHeaders() const {
-    return headers;
-}
+std::unordered_map<std::string, std::string> FrameObject::getHeaders() { return headers;}
 
 void FrameObject::setHeaders(const std::unordered_map<std::string, std::string> &headers) {
     this->headers = headers;
