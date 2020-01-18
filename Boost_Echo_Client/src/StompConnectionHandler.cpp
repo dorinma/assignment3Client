@@ -2,12 +2,13 @@
 // Created by dorin on 13/01/2020.
 //
 
-#include <include/StompConnectionHandler.h>
-//#include "StompConnectionHandler.h"
+//#include <include/StompConnectionHandler.h>
+#include "../include/StompConnectionHandler.h"
+
 StompConnectionHandler::StompConnectionHandler(MessageEncoderDecoder encdec, Protocol protocol, mutex &_mutexKeyboard, mutex &_mutexServer) :
-                        encdec(encdec), protocol(protocol), host_("0.0.0.0"), port_(7777), io_service_(), socket_(io_service_),
+                                host_("0.0.0.0"), port_(7777), io_service_(), socket_(io_service_), encdec(encdec), protocol(protocol), client(),
                                 _mutexKeyboard(_mutexKeyboard), _mutexServer(_mutexServer){
-Client client();
+//Client client();
 }
 
 StompConnectionHandler::~StompConnectionHandler() {
@@ -37,9 +38,6 @@ bool StompConnectionHandler::keyboardRun() {
 
         if (isConnected) {
             string stdOut = encdec.kbdToFrame(line).toString();
-            //cout<<"------message out------"<<endl;
-            //cout<<stdOut<<endl;
-            int len = stdOut.length();
             if (!sendLine(stdOut)) {
                 std::cout << "Disconnected. Exiting...\n" << std::endl;
                 shouldTerminate = true;
@@ -47,6 +45,7 @@ bool StompConnectionHandler::keyboardRun() {
             }
         }
     }
+    return true;
 }
 
 bool StompConnectionHandler::serverRun() {
@@ -103,6 +102,7 @@ bool StompConnectionHandler::serverRun() {
             }
         }
     }
+    return true;
 }
 
 bool StompConnectionHandler::connect() {
@@ -123,7 +123,7 @@ bool StompConnectionHandler::connect() {
         return isConnected;
     }
     protocol.setClient(&client);
-    encdec.setClient(&client);
+    encdec.setClient(client);
     isConnected = true;
     return isConnected;
 }

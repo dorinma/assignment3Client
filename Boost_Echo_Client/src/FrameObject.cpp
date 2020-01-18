@@ -2,14 +2,14 @@
 // Created by zeirah@wincs.cs.bgu.ac.il on 12/01/2020.
 //
 
-#include <include/FrameObject.h>
-//#include "FrameObject.h"
+//#include <include/FrameObject.h>
+#include "../include/FrameObject.h"
 
 FrameObject::FrameObject(std::string command, std::unordered_map<std::string, std::string> headers, std::string body) : command(command), headers(headers), body(body) {}
 
-FrameObject::FrameObject() { }
+FrameObject::FrameObject() : command() , headers(), body() { }
 
-FrameObject::FrameObject(std::string command) : command(command) {}
+FrameObject::FrameObject(std::string command) : command(command) , headers(), body(){}
 
 std::string FrameObject::toString() {
     std::string output = "";

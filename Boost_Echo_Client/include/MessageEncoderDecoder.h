@@ -28,7 +28,7 @@ public:
     FrameObject serverToFrame(string input);
     FrameObject kbdToFrame(string input);
     string frameToString(FrameObject frameObject);
-    void setClient(Client *client);
+    void setClient(Client &client);
     Client getClient();
     unordered_map<int, string> getReceipts();
     unordered_map<int, string> getReceiptIdSubscriptions();

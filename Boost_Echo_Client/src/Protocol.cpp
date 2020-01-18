@@ -6,12 +6,12 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <iostream>
-#include <include/Protocol.h>
-//#include "Protocol.h"
+//#include <include/Protocol.h>
+#include "../include/Protocol.h"
 using namespace std;
 
-Protocol::Protocol() {
-    Client client();
+Protocol::Protocol() : client(){
+    //Client client();
 }
 
 
@@ -36,7 +36,7 @@ FrameObject Protocol::process(FrameObject msg) {
             boost::split(exp, body, boost::is_any_of(" "));
 
             string bookName = exp[5];
-            for(int i = 6; i < exp.size(); i++)
+            for(unsigned int i = 6; i < exp.size(); i++)
             {
                 bookName = bookName + " " + exp[i];
             }
@@ -66,7 +66,7 @@ FrameObject Protocol::process(FrameObject msg) {
             vector <string> exp;
             boost::split(exp, body, boost::is_any_of(" "));
             string bookName = exp[4];
-            for(int i = 5; i < exp.size(); i++)
+            for(unsigned int i = 5; i < exp.size(); i++)
             {
                 bookName = bookName + " " + exp[i];
             }
@@ -93,13 +93,13 @@ FrameObject Protocol::process(FrameObject msg) {
 
         }//end borrowing book
 
-        else if(body.find("has") != string::npos & msg.getBody().find("added") == string::npos)
+        else if((body.find("has") != string::npos) & (msg.getBody().find("added") == string::npos))
         {
             vector <string> exp;
             boost::split(exp, body, boost::is_any_of(" "));
             string lastOwner = exp[0];
             string bookName = exp[2];
-            for(int i = 3; i < exp.size() - 2; i++)
+            for(unsigned int i = 3; i < exp.size() - 2; i++)
             {
                 bookName = bookName + " " + exp[i];
             }
@@ -126,7 +126,7 @@ FrameObject Protocol::process(FrameObject msg) {
             string lastOwner = exp[exp.size() - 1];
             string bookName = exp[1];
             string genre = headers.at("destination");
-            for (int i = 2; i < exp.size() - 2; i++) {
+            for (unsigned int i = 2; i < exp.size() - 2; i++) {
                 bookName = bookName + " " + exp[i];
             }
             //return from
@@ -146,9 +146,9 @@ FrameObject Protocol::process(FrameObject msg) {
             unordered_map<string, string> newHeaders;
             newHeaders["destination"] = genre;
             string newBody = client->getUserName() + ": ";
-            for(int i = 0; i < client->getInventory().size(); i++)
+            for(unsigned int i = 0; i < client->getInventory().size(); i++)
             {
-                if(client->getInventory()[i].getGenre() == genre & client->getInventory()[i].getExists())
+                if((client->getInventory()[i].getGenre() == genre) & (client->getInventory()[i].getExists()))
                 {
                     newBody += client->getInventory()[i].getNameBook() + ", ";
                 }

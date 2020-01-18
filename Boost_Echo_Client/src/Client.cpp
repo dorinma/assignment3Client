@@ -2,16 +2,16 @@
 // Created by zeirah@wincs.cs.bgu.ac.il on 12/01/2020.
 //
 
-#include <include/Client.h>
+//#include <include/Client.h>
 #include <iostream>
-//#include "Client.h"
+#include "../include/Client.h"
 
 using boost::asio::ip::tcp;
 
-Client::Client() {}
+Client::Client() : userName(), passcode(), inventory(), subId(), subCount(), wantedBook() {}
 
-Client::Client(string username, string passcode) : userName(username), passcode(passcode) {
-    subCount = 0;
+Client::Client(string username, string passcode) : userName(username), passcode(passcode), inventory(), subId(), subCount(0), wantedBook() {
+   // subCount = 0;
 }
 
 Client::~Client() {
@@ -83,7 +83,7 @@ void Client::removeBook(string bookName) {
 
 bool Client::findBook(string bookName) {
     for(Book b : inventory) {
-        if(b.getExists() == 1 & b.getNameBook() == bookName)
+        if((b.getExists() == 1) & (b.getNameBook() == bookName))
             return true;
     }
     return false;

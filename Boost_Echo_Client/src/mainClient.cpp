@@ -2,12 +2,12 @@
 #include <mutex>
 #include <thread>
 #include <iostream>
-#include <include/MessageEncoderDecoder.h>
-#include <include/StompConnectionHandler.h>
-#include <include/Protocol.h>
-//#include "Protocol.h"
-//#include "MessageEncoderDecoder.h"
-//#include "StompConnectionHandler.h"
+//#include <include/MessageEncoderDecoder.h>
+//#include <include/StompConnectionHandler.h>
+//#include <include/Protocol.h>
+#include "../include/Protocol.h"
+#include "../include/MessageEncoderDecoder.h"
+#include "../include/StompConnectionHandler.h"
 
 using namespace std;
 

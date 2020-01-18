@@ -3,18 +3,19 @@
 //
 
 //#include "MessageEncoderDecoder.h"
-#include <include/MessageEncoderDecoder.h>
+//#include <include/MessageEncoderDecoder.h>
+#include "../include/MessageEncoderDecoder.h"
 #include <iostream>
 
-MessageEncoderDecoder::MessageEncoderDecoder() {
-    username = "";
+MessageEncoderDecoder::MessageEncoderDecoder() : subId(0), receiptId(0), username(username), client(){
+/*    username = "";
     subId = 0;
     receiptId = 0;
-    Client client();
+    Client client();*/
 }
 
-void MessageEncoderDecoder::setClient(Client *client) {
-    this->client = client;
+void MessageEncoderDecoder::setClient(Client &newClient){
+    this->client = &newClient;
 }
 
 string MessageEncoderDecoder::frameToString(FrameObject frameObject) {
@@ -60,7 +61,7 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         command = "SEND";
         headers["destination"] = expressions[1];
         string bookName = expressions[2];
-        for (int j = 3; j < expressions.size(); ++j) {
+        for (unsigned int j = 3; j < expressions.size(); ++j) {
             bookName += " " + expressions[j];
         }
         body = username + " has added the book " + bookName;
@@ -70,7 +71,7 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         command = "SEND";
         headers["destination"] = expressions[1];
         string bookName = expressions[2];
-        for (int j = 3; j < expressions.size(); ++j) {
+        for (unsigned int j = 3; j < expressions.size(); ++j) {
             bookName += " " + expressions[j];
         }
         body = username + " wish to borrow " + bookName;
@@ -81,7 +82,7 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         command = "SEND";
         headers["destination"] = expressions[1];
         string bookName = expressions[2];
-        for (int j = 3; j < expressions.size(); ++j) {
+        for (unsigned int j = 3; j < expressions.size(); ++j) {
             bookName += " " + expressions[j];
         }
         body = "Returning " + bookName + " to " + client->getLastOwner(bookName);
@@ -129,7 +130,7 @@ FrameObject MessageEncoderDecoder::serverToFrame(string input) {
 
     command = lines[0];
 
-    for(int i = 1; i < lines.size(); i++) {
+    for(unsigned int i = 1; i < lines.size(); i++) {
         if (lines[i].size() > 0 && lines[i].find(":") != string::npos) {
             if(lines[i-1].length() > 0) { //this is an header line
                 vector<string> exp;

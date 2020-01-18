@@ -2,13 +2,13 @@
 // Created by hadas on 13/01/2020.
 //
 
-#include <include/Book.h>
-//#include "Book.h"
+//#include <include/Book.h>
+#include "../include/Book.h"
 
 using namespace std;
 
-Book::Book(string bookName, string genre, string lastOwner) : nameBook(bookName), genre(genre), lastOwner(lastOwner){
-    exists = true;
+Book::Book(string bookName, string genre, string lastOwner) : nameBook(bookName), genre(genre), lastOwner(lastOwner), exists(true){
+   // exists = true;
 }
 
 Book::Book(string bookName, string genre, string lastOwner, bool exists) : nameBook(bookName), genre(genre), lastOwner(lastOwner), exists(exists) {}
