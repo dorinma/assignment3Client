@@ -2,9 +2,9 @@
 // Created by zeirah@wincs.cs.bgu.ac.il on 12/01/2020.
 //
 
-//#include <include/Client.h>
+#include <include/Client.h>
 #include <iostream>
-#include "Client.h"
+//#include "Client.h"
 
 using boost::asio::ip::tcp;
 
@@ -63,7 +63,7 @@ void Client::addBook(string bookName,string genre, string lastOwner) {
 }
 
 void Client::addGenre(string subId, string genre) {
-    this->getSubId()[subId] = genre;
+    this->subId[subId] = genre;
 }
 
 void Client::setWantedBook(string bookName) { this->wantedBook = bookName; }
@@ -89,23 +89,17 @@ bool Client::findBook(string bookName) {
     return false;
 }
 
-//Book* Client::getBook(string bookName) {
-//    if(!findBook(bookName))
-//        return nullptr;
-//    else
-//    {
-//        for(Book b : inventory) {
-//            if (b.getNameBook() == bookName)
-//                return new Book(b.getNameBook(), b.getGenre(), b.getLastOwner(), b.getExists());
-//        }
-//        return nullptr;
-//    }
-//}
-
 string Client::toString() {
-
     string output = "name: "+this->userName + "\npass: "+ this->passcode+"\n";
-                    "MY BOOKS ARE: \n";
+
+    output = output + "MY SUBS ARE: \n";
+
+    for(pair<string, string> element : subId) {
+        output += element.second + ", ";
+    }
+
+    output = output + "\nMY BOOKS ARE: \n";
+
     for(Book b : inventory) {
         output = output + b.getNameBook() + ", genre " + b.getGenre() +
                 ", exist mode:" ;
@@ -132,6 +126,9 @@ string Client::getLastOwner(string bookName) {
         if (b.getNameBook() == bookName)
             return b.getLastOwner();
     }
-    //TODO what to do with this?
-    return "problemmmmmm";
+    return "problem";
+}
+
+void Client::removeSubscription(string genreId) {
+    subId.erase(genreId);
 }

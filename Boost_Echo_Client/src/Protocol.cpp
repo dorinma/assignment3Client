@@ -6,8 +6,8 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <iostream>
-//#include <include/Protocol.h>
-#include "Protocol.h"
+#include <include/Protocol.h>
+//#include "Protocol.h"
 using namespace std;
 
 Protocol::Protocol() {
@@ -104,13 +104,12 @@ FrameObject Protocol::process(FrameObject msg) {
                 bookName = bookName + " " + exp[i];
             }
             string genre = headers.at("destination");
-            if(client->getWantedBook() == bookName) { //TODO verify only client will enter here
+            if(client->getWantedBook() == bookName) {
                 string newBody = "Taking " + bookName + " from " + lastOwner;
                 unordered_map<string, string> newHeaders;
                 newHeaders["destination"] = genre;
                 FrameObject newFrame(newCommand, newHeaders, newBody);
                 client->addBook(bookName, genre, lastOwner);
-                //cout<<client->toString()<<endl;
                 client->setWantedBook("");
                 return newFrame;
             }
@@ -118,20 +117,6 @@ FrameObject Protocol::process(FrameObject msg) {
 
         else if(body.find("Taking") != string::npos) {
 
-//            vector <string> exp;
-//            boost::split(exp, body, boost::is_any_of(" "));
-//            string owner = exp[exp.size()-1];
-//            string bookName = exp[1];
-////            for(int i = 3; i < exp.size() - 2; i++) ///TODO to find book name
-////            {
-////                bookName = bookName + " " + exp[i];
-////            }
-//            if(client->getUserName() != owner)
-//            {login 10.100.102.9:8888 HADAS HADAS
-//                for(Book currBook : client->getInventory())
-//                    if (currBook.getNameBook() == bookName)
-//                        this->client->setExistMode(bookName, currBook.getGenre(), currBook.getLastOwner() ,true);
-//            }
             return frame;
         }
 
@@ -150,11 +135,8 @@ FrameObject Protocol::process(FrameObject msg) {
             }
             //return to
             else if (client->getUserName() == lastOwner) {
-                //Book* b = client->getBook(bookName);
-                //b->setExists(true);
                 client->setExistMode(bookName, genre, lastOwner, true);
             }
-            //cout<<frame.toString()<<endl;
             return frame;
         }
 
@@ -166,18 +148,17 @@ FrameObject Protocol::process(FrameObject msg) {
             string newBody = client->getUserName() + ": ";
             for(int i = 0; i < client->getInventory().size(); i++)
             {
-                if(client->getInventory()[i].getGenre() == genre)
+                if(client->getInventory()[i].getGenre() == genre & client->getInventory()[i].getExists())
                 {
                     newBody += client->getInventory()[i].getNameBook() + ", ";
                 }
             }
             FrameObject newFrame("SEND", newHeaders, newBody);
-            //cout<< "STATUS FRAME BOOKS\n" + newFrame.toString() << endl;
-
+            cout<< "STATUS FRAME BOOKS\n" + newFrame.toString() << endl;
             return newFrame;
         }
         else if(body.find(":") != string::npos){
-
+            return msg;
         }
         return frame;
     }
@@ -187,10 +168,10 @@ FrameObject Protocol::process(FrameObject msg) {
     }
     else if(command == "CONNECTED") {
         cout<<"Login successful"<<endl;
+        return msg;
     }
     else if(command == "RECEIPT"){
-        
-        //cout<<"Got receipt"<<endl;
+        return msg;
     }
     return frame;
 }

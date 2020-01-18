@@ -2,8 +2,8 @@
 // Created by hadas on 13/01/2020.
 //
 
-//#include <include/Book.h>
-#include "Book.h"
+#include <include/Book.h>
+//#include "Book.h"
 
 using namespace std;
 
@@ -17,25 +17,15 @@ const string &Book::getNameBook() const {
     return nameBook;
 }
 
-void Book::setNameBook(const string &nameBook) {
-    Book::nameBook = nameBook;
-}
-
 const string &Book::getGenre() const {
     return genre;
 }
 
-void Book::setGenre(const string &genre) {
-    Book::genre = genre;
-}
 
 const string &Book::getLastOwner() const {
     return lastOwner;
 }
 
-void Book::setLastOwner(const string &lastOwner) {
-    Book::lastOwner = lastOwner;
-}
 
 bool Book::getExists() { return exists; }
 

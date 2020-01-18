@@ -2,8 +2,8 @@
 // Created by dorin on 13/01/2020.
 //
 
-#include "MessageEncoderDecoder.h"
-//#include <include/MessageEncoderDecoder.h>
+//#include "MessageEncoderDecoder.h"
+#include <include/MessageEncoderDecoder.h>
 #include <iostream>
 
 MessageEncoderDecoder::MessageEncoderDecoder() {
@@ -49,9 +49,12 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
         headers["destination"] = expressions[1];
         subId++;
         headers["id"] = to_string(subId);
+        client->addGenre(to_string(subId), expressions[1]);
         receiptId++;
         headers["receipt"] = to_string(receiptId);
         receipts[receiptId] = "SUBSCRIBE";
+        receiptIdSubscriptions[receiptId] = expressions[1];
+
     }
     else if (expressions[0] == "add") {
         command = "SEND";
@@ -105,11 +108,11 @@ FrameObject MessageEncoderDecoder::kbdToFrame(string input) {
                 thisSubId = element.first;
         }
         headers["id"] = thisSubId;
-        client->getSubId().erase(expressions[1]); //delete this genre from user's subscriptions
-        //TODO should happen here also? happens in server side already. make sure!
+        client->removeSubscription(thisSubId);//delete this genre from user's subscriptions
         receiptId++;
         headers["receipt"] = to_string(receiptId);
         receipts[receiptId] = "UNSUBSCRIBE";
+        receiptIdSubscriptions[receiptId] = expressions[1];
     }
 
     FrameObject frameObject(command, headers, body);
@@ -149,3 +152,5 @@ FrameObject MessageEncoderDecoder::serverToFrame(string input) {
 }
 
 unordered_map<int, string> MessageEncoderDecoder::getReceipts() { return receipts; }
+
+unordered_map<int, string> MessageEncoderDecoder::getReceiptIdSubscriptions() { return receiptIdSubscriptions; }

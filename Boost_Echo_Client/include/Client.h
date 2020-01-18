@@ -22,6 +22,7 @@ private:
     int subCount;
     string wantedBook;
 
+
 public:
     Client();
 
@@ -53,6 +54,8 @@ public:
 
     void addGenre(string subId, string genre);
 
+    void removeSubscription(string genreId);
+
     void removeBook(string bookName);
 
     void setWantedBook(string bookName);
@@ -68,6 +71,7 @@ public:
     void setExistMode(string bookName, string genre, string owner, bool exist);
 
     string getLastOwner(string bookName);
+
 };
 
 

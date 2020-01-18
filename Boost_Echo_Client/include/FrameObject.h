@@ -16,11 +16,8 @@ public:
     FrameObject(std::string command, std::unordered_map<std::string, std::string> headers, std::string body);
 
     const std::string &getCommand() const;
-    void setCommand(const std::string &command);
     std::unordered_map<std::string, std::string> getHeaders();
-    void setHeaders(const std::unordered_map<std::string, std::string> &headers);
     const std::string &getBody() const;
-    void setBody(const std::string &body);
 
     std::string toString();
 

@@ -21,6 +21,7 @@ private:
     string username;
     Client *client;
     std::unordered_map<int, string> receipts;
+    std::unordered_map<int, string> receiptIdSubscriptions;
 
 public:
     MessageEncoderDecoder();
@@ -30,6 +31,8 @@ public:
     void setClient(Client *client);
     Client getClient();
     unordered_map<int, string> getReceipts();
+    unordered_map<int, string> getReceiptIdSubscriptions();
+
 };
 
 #endif //BOOST_ECHO_CLIENT_MESSAGEENCODERDECODER_H

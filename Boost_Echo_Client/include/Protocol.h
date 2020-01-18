@@ -18,7 +18,6 @@ public:
     Protocol();
     FrameObject process(FrameObject msg);
     void setClient(Client *c);
-    Client getClient();
 };
 
 

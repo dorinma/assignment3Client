@@ -2,8 +2,8 @@
 // Created by dorin on 13/01/2020.
 //
 
-//#include <include/StompConnectionHandler.h>
-#include "StompConnectionHandler.h"
+#include <include/StompConnectionHandler.h>
+//#include "StompConnectionHandler.h"
 StompConnectionHandler::StompConnectionHandler(MessageEncoderDecoder encdec, Protocol protocol, mutex &_mutexKeyboard, mutex &_mutexServer) :
                         encdec(encdec), protocol(protocol), host_("0.0.0.0"), port_(7777), io_service_(), socket_(io_service_),
                                 _mutexKeyboard(_mutexKeyboard), _mutexServer(_mutexServer){
@@ -31,8 +31,6 @@ bool StompConnectionHandler::keyboardRun() {
             client.setUserName(expressions[2]);
             client.setPasscode(expressions[3]);
             if (!connect()) {
-                //std::cerr << "Cannot connect to " << host_ << ":" << port_ << std::endl;
-                //std::cerr << "Cannot connect to server" << std::endl;
                 shouldTerminate = true;
             }
         }
@@ -47,9 +45,7 @@ bool StompConnectionHandler::keyboardRun() {
                 shouldTerminate = true;
                 break;
             }
-            //std::cout << "Sent " << len + 1 << " bytes to server" << std::endl;
         }
-        //cout<<"isConnected" << isConnected << endl;
     }
 }
 
@@ -57,21 +53,23 @@ bool StompConnectionHandler::serverRun() {
     while(!shouldTerminate) {
         if (isConnected) {
             string answer;
-            //std::cout << "Waiting for message from the server...\n" << std::endl;
             if (!this->getLine(answer)) {
                 std::cout << "1server Disconnected. Exiting...\n" << std::endl;
                 shouldTerminate = true;
                 break;
             }
-            //std::cout << "Got new message from the server\n" << std::endl;
 
             int len = answer.length();
             answer.resize(len - 1);
-           // std::cout << "Reply:" << client.getUserName() << "\n" << answer << "\n" << len << " bytes " << std::endl << std::endl;
 
             FrameObject frameObject = encdec.serverToFrame(answer);
-            //protocol.setClient(client);
+            //cout<<"------BODY------ \n"<<endl;
+            cout << frameObject.getBody() << endl;
             FrameObject response = protocol.process(frameObject);
+
+            //cout<<"------CLIENT INFO------ \n"<<endl;
+            //cout << client.toString() << endl;
+
 
             if (response.getCommand() == "EMPTY") { /*do nothing, no new frame was crated*/ }
 
@@ -81,12 +79,14 @@ bool StompConnectionHandler::serverRun() {
             }
 
             else if(response.getCommand() == "RECEIPT") {
-                string tempGenre = response.getHeaders()["destination"];
+               // string tempGenre = response.getHeaders()["destination"];
                 for (pair<int, string> element : encdec.getReceipts())
                 {
                     if(to_string(element.first) == response.getHeaders()["receipt-id"]) {
-                        if (element.second == "SUBSCRIBE")
+                        string tempGenre = encdec.getReceiptIdSubscriptions()[element.first];
+                        if (element.second == "SUBSCRIBE") {
                             std::cout << "Joined genre " + tempGenre << std::endl;
+                        }
                         else if (element.second == "UNSUBSCRIBE")
                             std::cout << "Exited genre " + tempGenre << std::endl;
                     }
@@ -95,7 +95,6 @@ bool StompConnectionHandler::serverRun() {
 
             else {
                 string result = encdec.frameToString(response);
-                //cout <<"after toSTring print:::: " + result << endl;
                 if(!sendLine(result)) {
                     std::cout << "2server Disconnected. Exiting...\n" << std::endl;
                     shouldTerminate = true;
@@ -107,15 +106,12 @@ bool StompConnectionHandler::serverRun() {
 }
 
 bool StompConnectionHandler::connect() {
-    //std::cout << "Starting connect to "
-    //          << host_ << ":" << port_ << std::endl;
     try {
         tcp::endpoint endpoint(boost::asio::ip::address::from_string(host_), port_); // the server endpoint
         boost::system::error_code error;
         socket_.connect(endpoint, error);
         if (error)
         {
-            //cerr<<"---connect error"<< endl;
             std::cerr << "Could not connect to server" << std::endl;
             throw boost::system::system_error(error);
         }
