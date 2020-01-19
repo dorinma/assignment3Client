@@ -135,7 +135,9 @@ FrameObject Protocol::process(FrameObject msg) {
             }
             //return to
             else if (client->getUserName() == lastOwner) {
-                client->setExistMode(bookName, genre, lastOwner, true);
+                string owner = client->getLastOwner(bookName);
+                //client->removeBook(bookName);
+                client->setExistMode(bookName, genre, owner, true);
             }
             return frame;
         }
@@ -150,11 +152,17 @@ FrameObject Protocol::process(FrameObject msg) {
             {
                 if((client->getInventory()[i].getGenre() == genre) & (client->getInventory()[i].getExists()))
                 {
-                    newBody += client->getInventory()[i].getNameBook() + ", ";
+//                    if(client->getInventory()[i].getExists())
+//                    {
+                        newBody += client->getInventory()[i].getNameBook() + ", ";
+//                    }
+//                    else{
+//                        newBody += client->getInventory()[i].getNameBook() + "(borrowed), ";
+//                    }
                 }
             }
             FrameObject newFrame("SEND", newHeaders, newBody);
-            cout<< "STATUS FRAME BOOKS\n" + newFrame.toString() << endl;
+            //cout<<  " protocol status print " << newBody << endl;
             return newFrame;
         }
         else if(body.find(":") != string::npos){

@@ -62,10 +62,13 @@ bool StompConnectionHandler::serverRun() {
             answer.resize(len - 1);
 
             FrameObject frameObject = encdec.serverToFrame(answer);
-            //cout<<"------BODY------ \n"<<endl;
+            //cout<<"------MSG IN ------ \n"<<endl;
+            //cout << frameObject.toString() << endl;
+            //cout<<"------BODY ------ \n"<<endl;
             cout << frameObject.getBody() << endl;
             FrameObject response = protocol.process(frameObject);
-
+            //cout << "____RESPONSE (msg out)____" << endl;
+            //cout << response.toString() << endl;
             //cout<<"------CLIENT INFO------ \n"<<endl;
             //cout << client.toString() << endl;
 
@@ -94,6 +97,7 @@ bool StompConnectionHandler::serverRun() {
 
             else {
                 string result = encdec.frameToString(response);
+                //cout << result << endl;
                 if(!sendLine(result)) {
                     std::cout << "2server Disconnected. Exiting...\n" << std::endl;
                     shouldTerminate = true;

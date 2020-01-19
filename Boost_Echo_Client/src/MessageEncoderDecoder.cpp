@@ -131,7 +131,7 @@ FrameObject MessageEncoderDecoder::serverToFrame(string input) {
     command = lines[0];
 
     for(unsigned int i = 1; i < lines.size(); i++) {
-        if (lines[i].size() > 0 && lines[i].find(":") != string::npos) {
+        if (lines[i].size() > 0 && lines[i].find(":") != string::npos && lines[i].find(",") == string::npos ) {
             if(lines[i-1].length() > 0) { //this is an header line
                 vector<string> exp;
                 boost::split(exp, lines[i], boost::is_any_of(":"));
